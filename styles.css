@@ -1,0 +1,237 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #333;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 3em;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    padding: 40px;
+}
+
+.map-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #fef3c7;
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.map-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: #fff;
+    overflow: hidden;
+    padding: 5px;
+}
+
+.uk-map-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+#mapOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+#mapOverlay text {
+    font-family: 'Caveat', cursive;
+    font-weight: 700;
+}
+
+.stats-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.stat-card {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.stat-card h2 {
+    font-size: 1.5em;
+    margin-bottom: 15px;
+    color: #667eea;
+}
+
+.stat-card h3 {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: #764ba2;
+}
+
+.stat-value {
+    font-size: 2.5em;
+    font-weight: 700;
+    color: #667eea;
+    margin: 10px 0;
+}
+
+.stat-label {
+    color: #666;
+    font-size: 0.95em;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 30px;
+    background: #e0e0e0;
+    border-radius: 15px;
+    overflow: hidden;
+    margin: 15px 0;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    width: 0%;
+    transition: width 1s ease-out;
+}
+
+.progress-text {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: 700;
+    color: #667eea;
+}
+
+.comparison {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 10px 0;
+}
+
+.comparison span {
+    font-size: 1.1em;
+}
+
+.target {
+    color: #764ba2;
+}
+
+.actual {
+    color: #667eea;
+    font-weight: 600;
+}
+
+.difference {
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.difference.ahead {
+    color: #059669;
+    background: #d1fae5;
+}
+
+.difference.behind {
+    color: #dc2626;
+    background: #fee2e2;
+}
+
+.error-message {
+    background: #fee2e2;
+    color: #dc2626;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 4px solid #dc2626;
+}
+
+.loading-message {
+    background: #dbeafe;
+    color: #1e40af;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+footer {
+    background: #f8f9fa;
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 0.9em;
+}
+
+footer a {
+    color: #667eea;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+.last-updated {
+    margin-top: 5px;
+    font-size: 0.85em;
+}
+
+@media (max-width: 768px) {
+    main {
+        grid-template-columns: 1fr;
+    }
+
+    header h1 {
+        font-size: 2em;
+    }
+
+    .stat-value {
+        font-size: 2em;
+    }
+}

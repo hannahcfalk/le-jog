@@ -1,0 +1,2 @@
+# LEJOG
+I am walking 1,407 km from Land's End to John o' Groats in 2026. Create a website which displays my journey pulling data from the Strava API https://developers.strava.com/. The website should display a basic map of the UK (not detailed) and a path from Land's End to John o' Groats. It should show my progress based on how many km I have walked based on my walks in Strava. Each week I need to walk 27km, also show where I should be in relation to where I am e.g. by the end of this week I should have walked x km, and I havve currently walked y.

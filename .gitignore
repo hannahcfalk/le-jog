@@ -1,0 +1,12 @@
+# Keep access token private
+config.js
+
+# macOS
+.DS_Store
+
+# Editor files
+*.swp
+*.swo
+*~
+.vscode/
+.idea/

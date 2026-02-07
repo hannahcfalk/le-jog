@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEJOG 2026 - Land's End to John o' Groats</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LEJOG 2026</h1>
+            <p class="subtitle">Land's End to John o' Groats - 1,407 km</p>
+        </header>
+
+        <main>
+            <div class="map-container">
+                <div class="map-wrapper">
+                    <svg viewBox="400 150 500 850" xmlns="http://www.w3.org/2000/svg" class="uk-map-svg">
+                        <image href="gb.svg" x="0" y="0" width="1000" height="1000" opacity="0.9" />
+                    </svg>
+                    <svg id="mapOverlay" viewBox="400 150 500 850" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Route Overlay -->
+                        <g id="routeOverlay">
+                            <!-- Planned route (dashed line) -->
+                            <polyline id="plannedRoute" fill="none" stroke="#000000" stroke-width="4" stroke-dasharray="10,5" stroke-linecap="round" stroke-linejoin="round" />
+
+                            <!-- Completed route (solid line) -->
+                            <polyline id="completedRoute" fill="none" stroke="#000000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" />
+
+                            <!-- Start point (Land's End) -->
+                            <path id="startPoint" fill="#059669" stroke="#fff" stroke-width="1.5" d="M 0,-20 C -6,-20 -10,-16 -10,-10 C -10,-4 0,0 0,0 C 0,0 10,-4 10,-10 C 10,-16 6,-20 0,-20 Z M 0,-14 C 2.2,-14 4,-12.2 4,-10 C 4,-7.8 2.2,-6 0,-6 C -2.2,-6 -4,-7.8 -4,-10 C -4,-12.2 -2.2,-14 0,-14 Z" />
+                            <text id="startLabel" fill="#1e293b" font-size="16" font-weight="bold" text-anchor="middle">Land's End</text>
+
+                            <!-- End point (John o' Groats) -->
+                            <path id="endPoint" fill="#f59e0b" stroke="#fff" stroke-width="1.5" d="M 0,-20 C -6,-20 -10,-16 -10,-10 C -10,-4 0,0 0,0 C 0,0 10,-4 10,-10 C 10,-16 6,-20 0,-20 Z M 0,-14 C 2.2,-14 4,-12.2 4,-10 C 4,-7.8 2.2,-6 0,-6 C -2.2,-6 -4,-7.8 -4,-10 C -4,-12.2 -2.2,-14 0,-14 Z" />
+                            <text id="endLabel" fill="#1e293b" font-size="16" font-weight="bold" text-anchor="middle">John o' Groats</text>
+
+                            <!-- Current position marker -->
+                            <circle id="currentPosition" fill="#dc2626" stroke="#fff" stroke-width="3" r="10" />
+                            <text id="progressLabel" fill="#dc2626" font-size="15" font-weight="bold"></text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h2>Journey Progress</h2>
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <p id="progressPercent" class="progress-text">0%</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Distance Walked</h3>
+                    <p id="distanceWalked" class="stat-value">0 km</p>
+                    <p class="stat-label">of 1,407 km</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>This Week</h3>
+                    <p id="thisWeekDistance" class="stat-value">0 km</p>
+                    <p class="stat-label">Target: 27 km/week</p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Target vs Actual</h3>
+                    <p id="targetDistance" class="stat-label">By end of week <span id="currentWeek">0</span>:</p>
+                    <p class="comparison">
+                        <span class="target">Target: <span id="targetKm">0</span> km</span>
+                        <span class="actual">Actual: <span id="actualKm">0</span> km</span>
+                    </p>
+                    <p id="difference" class="difference"></p>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Journey Details</h3>
+                    <p class="stat-label">Start: January 1, 2026</p>
+                    <p class="stat-label">Days elapsed: <span id="daysElapsed">0</span></p>
+                    <p class="stat-label">Weeks elapsed: <span id="weeksElapsed">0</span></p>
+                </div>
+
+                <div id="error" class="error-message" style="display: none;"></div>
+                <div id="loading" class="loading-message">Loading your Strava data...</div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Data from <a href="https://www.strava.com" target="_blank">Strava</a></p>
+            <p class="last-updated">Last updated: <span id="lastUpdated">Never</span></p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
