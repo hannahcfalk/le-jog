@@ -20,7 +20,6 @@
         <main>
             <div class="map-container">
                 <div class="pin pin-red"></div>
-                <div class="polaroid-caption">My Journey 📍</div>
                 <div class="map-wrapper">
                     <svg viewBox="400 150 500 850" xmlns="http://www.w3.org/2000/svg" class="uk-map-svg">
                         <image href="gb.svg" x="0" y="0" width="1000" height="1000" opacity="0.9" />
@@ -51,7 +50,7 @@
             </div>
 
             <div class="stats-container">
-                <div class="stat-card sticky-note-yellow">
+                <div class="stat-card">
                     <h2>Journey Progress</h2>
                     <div class="progress-bar">
                         <div id="progressFill" class="progress-fill"></div>
@@ -59,29 +58,31 @@
                     <p id="progressPercent" class="progress-text">0%</p>
                 </div>
 
-                <div class="stat-card sticky-note-pink">
+                <div class="stat-card">
                     <h3>Distance Walked</h3>
                     <p id="distanceWalked" class="stat-value">0 km</p>
                     <p class="stat-label">of 1,407 km</p>
                 </div>
 
-                <div class="stat-card sticky-note-mint">
+                <div class="stat-card">
                     <h3>This Week</h3>
                     <p id="thisWeekDistance" class="stat-value">0 km</p>
                     <p class="stat-label">Target: 27 km/week</p>
                 </div>
 
-                <div class="stat-card sticky-note-orange">
+                <div class="stat-card">
                     <h3>Target vs Actual</h3>
+                    <div class="comparison-row">
                     <p id="targetDistance" class="stat-label">By end of week <span id="currentWeek">0</span>:</p>
                     <p class="comparison">
                         <span class="target">Target: <span id="targetKm">0</span> km</span>
                         <span class="actual">Actual: <span id="actualKm">0</span> km</span>
                     </p>
+                    </div>
                     <p id="difference" class="difference"></p>
                 </div>
 
-                <div class="stat-card sticky-note-blue">
+                <div class="stat-card">
                     <h3>Journey Details</h3>
                     <p class="stat-label">Start: January 1, 2026</p>
                     <p class="stat-label">Days elapsed: <span id="daysElapsed">0</span></p>
@@ -94,7 +95,7 @@
         </main>
 
         <footer>
-            <p>Data from <a href="https://www.strava.com" target="_blank">Strava</a> 🚶</p>
+            <p>Data from <a href="https://www.strava.com" target="_blank">Strava</a></p>
             <p class="last-updated">Last updated: <span id="lastUpdated">Never</span></p>
         </footer>
         </div>

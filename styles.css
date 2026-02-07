@@ -7,106 +7,33 @@
 body {
     font-family: 'Caveat', cursive;
     background:
-        repeating-linear-gradient(
-            0deg,
-            #c19a6b 0px,
+        repeating-linear-gradient(0deg,
+            #e37d0a 0px,
+            #a37649 1px,
+            transparent 1px,
+            transparent 2px),
+        repeating-linear-gradient(90deg,
+            #312b23 0px,
             #c19a6b 1px,
             transparent 1px,
-            transparent 2px
-        ),
-        repeating-linear-gradient(
-            90deg,
-            #c19a6b 0px,
-            #c19a6b 1px,
-            transparent 1px,
-            transparent 2px
-        ),
+            transparent 2px),
         radial-gradient(circle at 20% 30%, #d2b48c 0%, #c19a6b 100%);
     background-size: 100% 100%, 100% 100%, 100% 100%;
     min-height: 100vh;
     overflow-y: auto;
     padding: 15px;
     position: relative;
-    color: #2c2416;
-}
 
-/* Cork texture overlay */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image:
-        radial-gradient(circle at 10% 20%, rgba(0, 0, 0, 0.03) 0%, transparent 50%),
-        radial-gradient(circle at 90% 80%, rgba(0, 0, 0, 0.02) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(139, 90, 43, 0.05) 0%, transparent 80%);
-    pointer-events: none;
-    z-index: 0;
-}
-
-.cork-board {
-    position: relative;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 20px;
-    z-index: 1;
-}
-
-/* Wooden frame */
-.wood-frame {
-    position: absolute;
-    top: -20px;
-    left: -20px;
-    right: -20px;
-    bottom: -20px;
-    border: 30px solid #6b4423;
-    border-radius: 5px;
-    box-shadow:
-        inset 0 0 20px rgba(0, 0, 0, 0.3),
-        0 10px 30px rgba(0, 0, 0, 0.5);
-    background: linear-gradient(135deg, #8b5a2b 0%, #6b4423 50%, #5a3a1f 100%);
-    pointer-events: none;
-    z-index: -1;
-}
-
-/* Wood grain effect */
-.wood-frame::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image:
-        repeating-linear-gradient(
-            90deg,
-            transparent 0px,
-            transparent 5px,
-            rgba(0, 0, 0, 0.1) 5px,
-            rgba(0, 0, 0, 0.1) 6px
-        );
-    opacity: 0.3;
-}
-
-.container {
-    position: relative;
-    z-index: 1;
 }
 
 /* Header - small simple header */
-header {
-    text-align: center;
-    margin: 5px auto 15px;
-    padding: 8px 15px;
-}
 
 header h1 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 1.3em;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 2.3em;
     font-weight: 600;
-    color: #2c2416;
+    color: white;
+    text-decoration: underline;
 }
 
 /* Push pins */
@@ -151,26 +78,6 @@ header h1 {
     left: 30%;
 }
 
-.pin-blue {
-    background: radial-gradient(circle at 30% 30%, #74b9ff, #0984e3);
-    top: 15px;
-    right: 30%;
-}
-
-.pin-yellow {
-    background: radial-gradient(circle at 30% 30%, #ffd93d, #f39c12);
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-.pin-green {
-    background: radial-gradient(circle at 30% 30%, #6be585, #27ae60);
-    top: 10px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
 main {
     display: grid;
     grid-template-columns: minmax(400px, 1fr) 1fr;
@@ -199,19 +106,6 @@ main {
     box-shadow:
         0 12px 30px rgba(0, 0, 0, 0.3),
         0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.polaroid-caption {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 1.1em;
-    text-align: center;
-    color: #2c2416;
-    margin-top: 10px;
-    position: absolute;
-    bottom: 10px;
-    left: 0;
-    right: 0;
-    font-weight: 500;
 }
 
 .map-wrapper {
@@ -256,47 +150,14 @@ main {
 .stat-card {
     position: relative;
     padding: 15px 18px;
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.15),
-        0 2px 4px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
     min-height: auto;
     flex-shrink: 0;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 8px 20px rgba(0, 0, 0, 0.2),
-        0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-/* Simple card styles */
-.sticky-note-yellow,
-.sticky-note-pink,
-.sticky-note-mint,
-.sticky-note-orange,
-.sticky-note-blue {
-    background: #f5f1e8;
+    background: white;
     border-radius: 8px;
 }
 
-/* Paper texture overlay on sticky notes */
-.stat-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-image:
-        radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(0, 0, 0, 0.02) 0%, transparent 50%);
-    pointer-events: none;
-}
-
 .stat-card h2 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 1.2em;
     margin-bottom: 10px;
     color: #2c2416;
@@ -306,7 +167,7 @@ main {
 }
 
 .stat-card h3 {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 1.1em;
     margin-bottom: 8px;
     color: #2c2416;
@@ -316,7 +177,7 @@ main {
 }
 
 .stat-value {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 2.2em;
     font-weight: 700;
     color: #2c2416;
@@ -326,7 +187,7 @@ main {
 }
 
 .stat-label {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     color: #666;
     font-size: 0.95em;
     position: relative;
@@ -348,14 +209,14 @@ main {
 
 .progress-fill {
     height: 100%;
-    background: #4caf50;
+    background: radial-gradient(circle at 30% 30%, #64af77, #0d6327);
     width: 0%;
     transition: width 1s ease-out;
 }
 
 .progress-text {
     text-align: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 1.3em;
     color: #2c2416;
     font-weight: 600;
@@ -363,18 +224,23 @@ main {
     z-index: 1;
 }
 
+.comparison-row {
+    display: flex;
+    justify-content: space-between;
+}
+
 .comparison {
     display: flex;
-    flex-direction: column;
-    gap: 6px;
+    flex-direction: row;
+    gap: 8px;
     margin: 6px 0;
     position: relative;
     z-index: 1;
 }
 
 .comparison span {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    font-size: 0.95em;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+    font-size: 1.5em;
 }
 
 .target {
@@ -387,7 +253,7 @@ main {
 }
 
 .difference {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 1em;
     font-weight: 600;
     margin-top: 6px;
@@ -400,12 +266,12 @@ main {
 
 .difference.ahead {
     color: #fff;
-    background: #4caf50;
+    background: radial-gradient(circle at 30% 30%, #64af77, #0d6327);
 }
 
 .difference.behind {
     color: #fff;
-    background: #f44336;
+    background: radial-gradient(circle at 30% 30%, #ff6b6b, #c0392b);
 }
 
 /* Message cards */
@@ -415,7 +281,7 @@ main {
     padding: 12px 15px;
     border-radius: 8px;
     border-left: 4px solid #f44336;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.95em;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
@@ -426,26 +292,27 @@ main {
     padding: 12px 15px;
     border-radius: 8px;
     text-align: center;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.95em;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
 }
 
 /* Footer */
 footer {
-    background: rgba(245, 241, 232, 0.95);
-    padding: 12px 20px;
+    background: white;
     text-align: center;
-    color: #666;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: black;
+    font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 0.9em;
-    margin-top: 15px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    width: fit-content;
+    padding: 12px 20px;
+    margin: 0 auto;
+    opacity: 0.8;
 }
 
 footer a {
-    color: #2c2416;
+    color: #FC5200;
     text-decoration: none;
     font-weight: 600;
 }
