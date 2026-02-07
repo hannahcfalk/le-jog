@@ -6,18 +6,25 @@
     <title>LEJOG 2026 - Land's End to John o' Groats</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Permanent+Marker&family=Indie+Flower&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>LEJOG 2026</h1>
-            <p class="subtitle">Land's End to John o' Groats - 1,407 km</p>
-        </header>
+    <div class="cork-board">
+        <div class="wood-frame"></div>
+        <div class="container">
+            <header>
+                <div class="pin pin-red"></div>
+                <div class="pin pin-blue"></div>
+                <h1>LEJOG 2026</h1>
+                <p class="subtitle">Land's End to John o' Groats</p>
+                <p class="subtitle-distance">1,407 km adventure!</p>
+            </header>
 
         <main>
             <div class="map-container">
+                <div class="pin pin-yellow"></div>
+                <div class="polaroid-caption">My Journey 📍</div>
                 <div class="map-wrapper">
                     <svg viewBox="400 150 500 850" xmlns="http://www.w3.org/2000/svg" class="uk-map-svg">
                         <image href="gb.svg" x="0" y="0" width="1000" height="1000" opacity="0.9" />
@@ -48,7 +55,8 @@
             </div>
 
             <div class="stats-container">
-                <div class="stat-card">
+                <div class="stat-card sticky-note-yellow">
+                    <div class="pin pin-green"></div>
                     <h2>Journey Progress</h2>
                     <div class="progress-bar">
                         <div id="progressFill" class="progress-fill"></div>
@@ -56,19 +64,22 @@
                     <p id="progressPercent" class="progress-text">0%</p>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card sticky-note-pink">
+                    <div class="pin pin-red"></div>
                     <h3>Distance Walked</h3>
                     <p id="distanceWalked" class="stat-value">0 km</p>
                     <p class="stat-label">of 1,407 km</p>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card sticky-note-mint">
+                    <div class="pin pin-blue"></div>
                     <h3>This Week</h3>
                     <p id="thisWeekDistance" class="stat-value">0 km</p>
                     <p class="stat-label">Target: 27 km/week</p>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card sticky-note-orange">
+                    <div class="pin pin-yellow"></div>
                     <h3>Target vs Actual</h3>
                     <p id="targetDistance" class="stat-label">By end of week <span id="currentWeek">0</span>:</p>
                     <p class="comparison">
@@ -78,7 +89,8 @@
                     <p id="difference" class="difference"></p>
                 </div>
 
-                <div class="stat-card">
+                <div class="stat-card sticky-note-blue">
+                    <div class="pin pin-green"></div>
                     <h3>Journey Details</h3>
                     <p class="stat-label">Start: January 1, 2026</p>
                     <p class="stat-label">Days elapsed: <span id="daysElapsed">0</span></p>
@@ -91,9 +103,10 @@
         </main>
 
         <footer>
-            <p>Data from <a href="https://www.strava.com" target="_blank">Strava</a></p>
+            <p>Data from <a href="https://www.strava.com" target="_blank">Strava</a> 🚶</p>
             <p class="last-updated">Last updated: <span id="lastUpdated">Never</span></p>
         </footer>
+        </div>
     </div>
 
     <script src="config.js"></script>
