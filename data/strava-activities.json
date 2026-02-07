@@ -1,0 +1,127 @@
+{
+  "lastUpdated": "2026-02-07T18:25:34.987Z",
+  "startDate": "2026-01-01",
+  "activities": [
+    {
+      "id": 16925269744,
+      "name": "LE - JOG 1",
+      "distance": 20475.6,
+      "type": "Walk",
+      "start_date": "2026-01-03T11:44:32Z",
+      "moving_time": 13820,
+      "elapsed_time": 14267,
+      "total_elevation_gain": 54.5
+    },
+    {
+      "id": 16934473055,
+      "name": "LE - JOG 2",
+      "distance": 6886.3,
+      "type": "Walk",
+      "start_date": "2026-01-04T11:54:41Z",
+      "moving_time": 4841,
+      "elapsed_time": 5309,
+      "total_elevation_gain": 30.9
+    },
+    {
+      "id": 16971171975,
+      "name": "LE - JOG 3",
+      "distance": 3358.5,
+      "type": "Walk",
+      "start_date": "2026-01-07T18:22:41Z",
+      "moving_time": 2326,
+      "elapsed_time": 2546,
+      "total_elevation_gain": 0
+    },
+    {
+      "id": 16980024656,
+      "name": "LE - JOG 4",
+      "distance": 4494.1,
+      "type": "Walk",
+      "start_date": "2026-01-08T14:19:39Z",
+      "moving_time": 2982,
+      "elapsed_time": 3664,
+      "total_elevation_gain": 12.3
+    },
+    {
+      "id": 17003265409,
+      "name": "LE - JOG 5",
+      "distance": 11000.4,
+      "type": "Walk",
+      "start_date": "2026-01-10T14:57:53Z",
+      "moving_time": 8094,
+      "elapsed_time": 8362,
+      "total_elevation_gain": 31.1
+    },
+    {
+      "id": 17011848076,
+      "name": "LE - JOG 6",
+      "distance": 12168.7,
+      "type": "Walk",
+      "start_date": "2026-01-11T10:43:55Z",
+      "moving_time": 8201,
+      "elapsed_time": 8304,
+      "total_elevation_gain": 62.3
+    },
+    {
+      "id": 17025092073,
+      "name": "LE - JOG 7",
+      "distance": 3518.4,
+      "type": "Walk",
+      "start_date": "2026-01-12T17:20:36Z",
+      "moving_time": 2002,
+      "elapsed_time": 2224,
+      "total_elevation_gain": 10.5
+    },
+    {
+      "id": 17161802944,
+      "name": "LE - JOG 8",
+      "distance": 12518.3,
+      "type": "Walk",
+      "start_date": "2026-01-24T12:31:40Z",
+      "moving_time": 8787,
+      "elapsed_time": 8912,
+      "total_elevation_gain": 63.1
+    },
+    {
+      "id": 17236586248,
+      "name": "LE - JOG 9",
+      "distance": 3543.1,
+      "type": "Walk",
+      "start_date": "2026-01-31T10:38:40Z",
+      "moving_time": 2519,
+      "elapsed_time": 2540,
+      "total_elevation_gain": 33.1
+    },
+    {
+      "id": 17240371584,
+      "name": "LE - JOG 10",
+      "distance": 6275.6,
+      "type": "Walk",
+      "start_date": "2026-01-31T15:17:41Z",
+      "moving_time": 4575,
+      "elapsed_time": 4632,
+      "total_elevation_gain": 19.1
+    },
+    {
+      "id": 17252004365,
+      "name": "LE - JOG 10",
+      "distance": 18302.3,
+      "type": "Walk",
+      "start_date": "2026-02-01T11:19:22Z",
+      "moving_time": 12880,
+      "elapsed_time": 16491,
+      "total_elevation_gain": 40.8
+    },
+    {
+      "id": 17308541422,
+      "name": "LE - JOG 11",
+      "distance": 6020.2,
+      "type": "Walk",
+      "start_date": "2026-02-06T16:59:00Z",
+      "moving_time": 4229,
+      "elapsed_time": 4229,
+      "total_elevation_gain": 48.6
+    }
+  ],
+  "totalDistance": 108.5615
+}

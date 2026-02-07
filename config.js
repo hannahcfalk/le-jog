@@ -1,4 +1,4 @@
-// Journey Configuration Template
+// Journey Configuration
 // Activity data is now loaded from data/strava-activities.json
 // The data is automatically updated weekly via GitHub Actions
 

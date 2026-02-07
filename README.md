@@ -4,45 +4,29 @@ A website to track my journey walking 1,407 km from Land's End to John o' Groats
 
 ## Features
 
-- Visual map showing the UK with the LEJOG route
-- Real-time progress tracking from Strava walking activities
-- Weekly target comparison (27 km/week)
-- Progress statistics and journey details
+- 🗺️ Visual map showing the UK with the LEJOG route
+- 📊 Progress tracking from Strava walking activities
+- 🎯 Weekly target comparison (27 km/week)
+- 📈 Progress statistics and journey details
+- 🔄 Automatic weekly data updates via GitHub Actions
+- 🔒 Secure token management (never expires!)
 
-## Setup Instructions
+## Quick Setup (5 minutes)
 
 ### 1. Get Your Strava API Credentials
 
-Follow the detailed instructions in [STRAVA_SETUP.md](STRAVA_SETUP.md) to:
-1. Create a Strava API application
-2. Get your access token
-3. Configure it in the website
+1. Go to https://www.strava.com/settings/api and create an app
+2. Note your **Client ID** and **Client Secret**
+3. Authorize the app and get your **Refresh Token**
 
-### 2. Configure the Website
+💡 **Helper script**: Use `./scripts/get-strava-tokens.sh` to easily extract your tokens
 
-1. Open `config.js`
-2. Replace `YOUR_ACCESS_TOKEN_HERE` with your actual Strava access token from step 1:
-
-```javascript
-STRAVA_ACCESS_TOKEN: 'your_actual_token_here',
-```
-
-### 3. Test Locally
-
-Open `index.html` in your web browser to test the site locally. If everything is configured correctly, you should see:
-- A map of the UK with the LEJOG route
-- Your current walking progress from Strava
-- Statistics comparing your actual progress to the target
-
-### 4. Deploy to GitHub Pages
-
-#### Option A: Using Git (Recommended)
+### 2. Deploy to GitHub Pages
 
 1. Create a new repository on GitHub (e.g., `lejog-tracker`)
 
-2. Initialize git in this directory and push to GitHub:
+2. Push this code to GitHub:
 ```bash
-git init
 git add .
 git commit -m "Initial commit - LEJOG tracker"
 git branch -M main
@@ -51,49 +35,59 @@ git push -u origin main
 ```
 
 3. Enable GitHub Pages:
-   - Go to your repository on GitHub
-   - Click "Settings" > "Pages"
-   - Under "Source", select "Deploy from a branch"
-   - Select branch: `main` and folder: `/ (root)`
-   - Click "Save"
+   - Go to **Settings** → **Pages**
+   - Select branch: `main`, folder: `/ (root)`
+   - Click **Save**
 
-4. Your site will be live at: `https://YOUR_USERNAME.github.io/lejog-tracker/`
+### 3. Add GitHub Secrets
 
-#### Option B: Manual Upload
+Your Strava credentials need to be added as secrets for automatic updates:
 
-1. Create a new repository on GitHub
-2. Click "uploading an existing file"
-3. Drag and drop all files: `index.html`, `styles.css`, `app.js`, `config.js`
-4. Commit the files
-5. Enable GitHub Pages as described above
+1. Go to **Settings** → **Secrets and variables** → **Actions**
+2. Add three secrets:
+   - `STRAVA_CLIENT_ID` - Your Strava Client ID
+   - `STRAVA_CLIENT_SECRET` - Your Strava Client Secret
+   - `STRAVA_REFRESH_TOKEN` - Your Strava Refresh Token
 
-### 5. Update Your Strava App Settings
+### 4. Trigger First Data Update
 
-Once your site is deployed:
-1. Go back to https://www.strava.com/settings/api
-2. Update your application's "Website" to your GitHub Pages URL
-3. Update "Authorization Callback Domain" to `YOUR_USERNAME.github.io`
+Go to **Actions** tab → **Update Strava Data** → **Run workflow**
 
-## Security Note
+Your site will be live at: `https://YOUR_USERNAME.github.io/lejog-tracker/`
 
-Your Strava access token is stored in `config.js` and will be visible to anyone who views the page source. This is acceptable for a personal project, but be aware:
+## How It Works
 
-- Only your own Strava data is accessible with this token
-- Anyone could potentially use your token to view your activities
-- For a public-facing application, you'd want to use a backend server to hide the token
+### Automatic Data Updates 🔄
 
-If you prefer more security, you can:
-1. Make your GitHub repository private (site will still be public)
-2. Implement a backend proxy to hide your token
-3. Regenerate your token periodically
+- GitHub Actions workflow runs **every Monday at 6 AM UTC**
+- Automatically **refreshes your Strava access token** (never expires!)
+- Fetches your Walk/Hike activities since January 1, 2026
+- Generates `data/strava-activities.json` with your progress
+- Commits the updated data file to your repository
+
+### Security 🔒
+
+✅ **Secure**: Your Strava credentials are stored in GitHub Secrets, never in code
+✅ **Private**: Tokens are never exposed publicly
+✅ **Simple**: The website only reads static JSON data
+✅ **Reliable**: Automatic token refresh means it never breaks
 
 ## Files
 
+### Website
 - `index.html` - Main website structure
 - `styles.css` - Styling and layout
-- `app.js` - Application logic, Strava integration, map drawing
-- `config.js` - Configuration (Strava token, journey settings)
-- `STRAVA_SETUP.md` - Detailed Strava API setup guide
+- `app.js` - Application logic and map drawing
+- `config.js` - Journey configuration (dates, distances, targets)
+- `data/strava-activities.json` - Static activity data (auto-generated)
+
+### Automation
+- `.github/workflows/update-strava-data.yml` - GitHub Actions workflow
+- `scripts/fetch-strava-data.js` - Fetches and generates activity data
+- `scripts/get-strava-tokens.sh` - Helper to get initial tokens
+
+### Documentation
+- `scripts/README.md` - Script documentation
 
 ## Customization
 
@@ -104,21 +98,37 @@ You can customize the journey parameters in `config.js`:
 
 ## Troubleshooting
 
-**"Please configure your Strava access token"**
-- Make sure you've replaced `YOUR_ACCESS_TOKEN_HERE` in `config.js` with your actual token
+**No activities showing on the site**
+- Manually trigger the workflow: **Actions** → **Update Strava Data** → **Run workflow**
+- Check that you have Walk or Hike activities after January 1, 2026
+- Verify activities are not set to private in Strava
 
-**"Invalid access token"**
-- Your token may have expired (they last ~6 hours)
-- Follow Step 3 in STRAVA_SETUP.md to get a new token
+**Workflow fails with token errors**
+- Your refresh token may have been revoked
+- Re-run the OAuth flow to get a new refresh token
+- Update the `STRAVA_REFRESH_TOKEN` secret in GitHub
 
-**No activities showing**
-- Make sure your Strava activities are marked as "Walk" or "Hike"
-- Check that activities are dated after January 1, 2026
-- Verify your activities are not set to private
+**Data not updating automatically**
+- Check the **Actions** tab for workflow run status
+- Verify all three secrets are correctly added in GitHub
+- View workflow logs for detailed error messages
 
 **Map not displaying**
 - Check browser console for JavaScript errors
-- Make sure all files are in the same directory
+- Ensure `data/strava-activities.json` exists
+
+## Local Testing
+
+Test the data fetch script locally:
+
+```bash
+export STRAVA_CLIENT_ID="your_client_id"
+export STRAVA_CLIENT_SECRET="your_client_secret"
+export STRAVA_REFRESH_TOKEN="your_refresh_token"
+export START_DATE="2026-01-01"
+
+node scripts/fetch-strava-data.js
+```
 
 ## License
 

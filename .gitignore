@@ -1,6 +1,3 @@
-# Keep access token private
-config.js
-
 # macOS
 .DS_Store
 

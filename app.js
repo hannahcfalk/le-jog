@@ -114,42 +114,22 @@ class LEJOGTracker {
         const errorEl = document.getElementById('error');
 
         try {
-            // Check if token is configured
-            if (CONFIG.STRAVA_ACCESS_TOKEN === 'YOUR_ACCESS_TOKEN_HERE') {
-                throw new Error('Please configure your Strava access token in config.js. See STRAVA_SETUP.md for instructions.');
-            }
-
             loadingEl.style.display = 'block';
             errorEl.style.display = 'none';
 
-            // Fetch activities from Strava
-            const startDate = new Date(CONFIG.START_DATE);
-            const startTimestamp = Math.floor(startDate.getTime() / 1000);
-
-            const response = await fetch(
-                `https://www.strava.com/api/v3/athlete/activities?after=${startTimestamp}&per_page=200`,
-                {
-                    headers: {
-                        'Authorization': `Bearer ${CONFIG.STRAVA_ACCESS_TOKEN}`
-                    }
-                }
-            );
+            // Fetch activities from static data file
+            const response = await fetch('data/strava-activities.json');
 
             if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error('Invalid access token. Please check your Strava credentials in config.js.');
-                }
-                throw new Error(`Strava API error: ${response.status}`);
+                throw new Error(`Failed to load activity data: ${response.status}`);
             }
 
-            const activities = await response.json();
+            const data = await response.json();
 
-            // Filter for walking/hiking activities only
-            this.activities = activities.filter(activity =>
-                activity.type === 'Walk' || activity.type === 'Hike'
-            );
+            // Use the pre-filtered activities from the static file
+            this.activities = data.activities;
 
-            // Calculate total distance (Strava returns distance in meters)
+            // Calculate total distance (distance is in meters)
             this.totalDistance = this.activities.reduce((sum, activity) =>
                 sum + (activity.distance / 1000), 0
             );
@@ -157,7 +137,7 @@ class LEJOGTracker {
             loadingEl.style.display = 'none';
 
         } catch (error) {
-            console.error('Error fetching Strava data:', error);
+            console.error('Error loading Strava data:', error);
             errorEl.textContent = `Error: ${error.message}`;
             errorEl.style.display = 'block';
             loadingEl.style.display = 'none';
