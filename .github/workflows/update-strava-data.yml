@@ -34,6 +34,7 @@ jobs:
       - name: Create Pull Request for data update
         uses: peter-evans/create-pull-request@v6
         with:
+          token: ${{ secrets.PAT_TOKEN }}
           commit-message: "Update Strava activities data"
           branch: "bot/update-strava-data"
           delete-branch: true
