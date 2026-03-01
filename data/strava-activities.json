@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-02-23T06:25:49.395Z",
+  "lastUpdated": "2026-03-01T17:37:46.035Z",
   "startDate": "2026-01-01",
   "activities": [
     {
@@ -151,7 +151,37 @@
       "moving_time": 8973,
       "elapsed_time": 15453,
       "total_elevation_gain": 23
+    },
+    {
+      "id": 17508940056,
+      "name": "Afternoon Walk",
+      "distance": 4246.2,
+      "type": "Walk",
+      "start_date": "2026-02-24T17:36:24Z",
+      "moving_time": 2955,
+      "elapsed_time": 3087,
+      "total_elevation_gain": 6.1
+    },
+    {
+      "id": 17554936221,
+      "name": "Lunch Walk",
+      "distance": 20092.2,
+      "type": "Walk",
+      "start_date": "2026-02-28T11:31:56Z",
+      "moving_time": 13327,
+      "elapsed_time": 17577,
+      "total_elevation_gain": 52.8
+    },
+    {
+      "id": 17564140129,
+      "name": "Morning Walk",
+      "distance": 12504.1,
+      "type": "Walk",
+      "start_date": "2026-03-01T10:04:16Z",
+      "moving_time": 8346,
+      "elapsed_time": 8775,
+      "total_elevation_gain": 44.2
     }
   ],
-  "totalDistance": 149.8714
+  "totalDistance": 186.71389999999997
 }
