@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   update-data:
@@ -30,9 +31,13 @@ jobs:
           START_DATE: '2026-01-01'
         run: node scripts/fetch-strava-data.js
 
-      - name: Commit and push if changes
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add data/strava-activities.json
-          git diff --quiet && git diff --staged --quiet || (git commit -m "Update Strava activities data" && git push)
+      - name: Create Pull Request for data update
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "Update Strava activities data"
+          branch: "bot/update-strava-data"
+          delete-branch: true
+          title: "Update Strava activities data"
+          body: "Automated Strava data refresh."
+          add-paths: |
+            data/strava-activities.json
