@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2026-03-06T18:26:29.238Z",
+  "lastUpdated": "2026-03-08T14:06:48.298Z",
   "startDate": "2026-01-01",
   "activities": [
     {
@@ -211,7 +211,17 @@
       "moving_time": 3208,
       "elapsed_time": 3459,
       "total_elevation_gain": 12.2
+    },
+    {
+      "id": 17637970960,
+      "name": "Lunch Walk",
+      "distance": 16192.9,
+      "type": "Walk",
+      "start_date": "2026-03-07T12:44:23Z",
+      "moving_time": 11296,
+      "elapsed_time": 11660,
+      "total_elevation_gain": 74.4
     }
   ],
-  "totalDistance": 199.48249999999996
+  "totalDistance": 215.67539999999997
 }
