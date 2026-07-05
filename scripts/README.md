@@ -50,6 +50,16 @@ The script generates `data/strava-activities.json` with the following structure:
 }
 ```
 
+### Troubleshooting
+
+If the workflow logs show:
+
+```text
+Strava API error: 403 - {"message":"Forbidden","errors":[{"resource":"Application","field":"Status","code":"Inactive"}]}
+```
+
+the GitHub secrets are valid enough to refresh an access token, but Strava has marked the API application itself as inactive. Open the Strava app settings for `STRAVA_CLIENT_ID`, reactivate or approve the application, then rerun the workflow.
+
 ## GitHub Actions Workflow
 
 The workflow automatically runs:

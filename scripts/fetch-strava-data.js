@@ -16,6 +16,32 @@ const STRAVA_CLIENT_SECRET = process.env.STRAVA_CLIENT_SECRET;
 const STRAVA_REFRESH_TOKEN = process.env.STRAVA_REFRESH_TOKEN;
 const START_DATE = process.env.START_DATE || '2026-01-01';
 
+function buildStravaApiError(action, statusCode, data) {
+    let parsedError;
+
+    try {
+        parsedError = JSON.parse(data);
+    } catch {
+        return new Error(`${action} failed: ${statusCode} - ${data}`);
+    }
+
+    const inactiveApplication = parsedError.errors?.some(error =>
+        error.resource === 'Application' &&
+        error.field === 'Status' &&
+        error.code === 'Inactive'
+    );
+
+    if (statusCode === 403 && inactiveApplication) {
+        return new Error([
+            `${action} failed: Strava rejected this app because its API status is inactive.`,
+            'Open the Strava app settings for STRAVA_CLIENT_ID and reactivate/approve the application before rerunning this workflow.',
+            `Raw response: ${data}`
+        ].join('\n'));
+    }
+
+    return new Error(`${action} failed: ${statusCode} - ${data}`);
+}
+
 // Validate required environment variables
 if (!STRAVA_CLIENT_ID || !STRAVA_CLIENT_SECRET || !STRAVA_REFRESH_TOKEN) {
     console.error('Error: Required environment variables missing');
@@ -65,7 +91,7 @@ function refreshAccessToken() {
                         reject(new Error(`Failed to parse token response: ${error.message}`));
                     }
                 } else {
-                    reject(new Error(`Token refresh failed: ${res.statusCode} - ${data}`));
+                    reject(buildStravaApiError('Token refresh', res.statusCode, data));
                 }
             });
         });
@@ -108,7 +134,7 @@ function fetchActivities(accessToken) {
                         reject(new Error(`Failed to parse JSON: ${error.message}`));
                     }
                 } else {
-                    reject(new Error(`Strava API error: ${res.statusCode} - ${data}`));
+                    reject(buildStravaApiError('Activity fetch', res.statusCode, data));
                 }
             });
         });
