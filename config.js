@@ -1,6 +1,6 @@
 // Journey Configuration
-// Activity data is now loaded from data/strava-activities.json
-// The data is automatically updated weekly via GitHub Actions
+// Activity data is loaded from /data/strava-activities.json.
+// In production Cloud Run serves this from webhook-updated Cloud Storage.
 
 const CONFIG = {
     // Journey configuration
