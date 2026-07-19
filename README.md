@@ -2,26 +2,26 @@
 
 A website to track my journey walking 1,407 km from Land's End to John o' Groats, starting January 1, 2026.
 
-The app is now designed for Google Cloud Run instead of static GitHub Pages. Cloud Run serves the website, receives Strava webhook events, refreshes Strava activities, and stores the generated JSON in Cloud Storage so data updates do not require a deploy.
+The app is now designed for Google Cloud Run instead of static GitHub Pages. Cloud Run serves the website from the checked-in data file by default, with optional Strava webhook refreshes backed by Cloud Storage.
 
 ## Features
 
 - Visual UK map showing the LEJOG route
 - Progress tracking from Strava Walk and Hike activities
 - Weekly target comparison (27 km/week)
-- Strava webhook endpoint for create/update/delete activity events
-- Cloud Storage-backed `data/strava-activities.json`
-- Manual admin refresh endpoint for bootstrapping and recovery
+- Optional Strava webhook endpoint for create/update/delete activity events
+- Optional Cloud Storage-backed `data/strava-activities.json`
+- Optional manual admin refresh endpoint for bootstrapping and recovery
 
 ## How It Works
 
 1. The browser loads the site from Cloud Run.
 2. `app.js` fetches `/data/strava-activities.json`.
-3. Cloud Run serves that JSON from Cloud Storage.
-4. Strava sends activity events to `/strava/webhook`.
+3. Cloud Run serves that JSON from the checked-in file, or from Cloud Storage when `GCS_BUCKET` is configured.
+4. If live refresh is configured, Strava sends activity events to `/strava/webhook`.
 5. Cloud Run acknowledges the webhook immediately, then refreshes Strava data and overwrites the JSON object in Cloud Storage.
 
-Strava requires webhook POSTs to receive a `200 OK` quickly, so the service debounces refresh work after acknowledging the event. Deploy Cloud Run with `--no-cpu-throttling`, as shown below, so the delayed refresh can keep running after the webhook response is sent.
+Strava requires webhook POSTs to receive a `200 OK` quickly, so the service debounces refresh work after acknowledging the event. For live refresh, deploy Cloud Run with `--no-cpu-throttling`, as shown below, so the delayed refresh can keep running after the webhook response is sent.
 
 ## Strava Setup
 
@@ -41,7 +41,7 @@ Helper script:
 ./scripts/get-strava-tokens.sh CLIENT_ID CLIENT_SECRET AUTH_CODE
 ```
 
-## GCP Setup
+## Minimal GCP Setup
 
 Set your project and region:
 
@@ -49,18 +49,36 @@ Set your project and region:
 export PROJECT_ID="your-gcp-project"
 export REGION="europe-west2"
 export SERVICE="le-jog-tracker"
-export GCS_BUCKET="your-lejog-tracker-bucket"
 ```
 
 Enable the required APIs:
 
 ```bash
-gcloud services enable run.googleapis.com cloudbuild.googleapis.com secretmanager.googleapis.com storage.googleapis.com --project "$PROJECT_ID"
+gcloud services enable run.googleapis.com cloudbuild.googleapis.com --project "$PROJECT_ID"
 ```
 
-Create the data bucket:
+Deploy to Cloud Run:
 
 ```bash
+gcloud run deploy "$SERVICE" \
+  --source . \
+  --project "$PROJECT_ID" \
+  --region "$REGION" \
+  --allow-unauthenticated \
+  --set-env-vars "START_DATE=2026-01-01"
+```
+
+Without `GCS_BUCKET`, Cloud Run serves the checked-in `data/strava-activities.json` file. That is enough for a basic deploy.
+
+## Optional Live Strava Refresh
+
+To refresh Strava data from Cloud Run and store it in Cloud Storage, create a bucket and Secret Manager secrets.
+
+```bash
+export GCS_BUCKET="your-lejog-tracker-bucket"
+
+gcloud services enable secretmanager.googleapis.com storage.googleapis.com --project "$PROJECT_ID"
+
 gcloud storage buckets create "gs://$GCS_BUCKET" --project "$PROJECT_ID" --location "$REGION"
 ```
 
@@ -89,9 +107,7 @@ printf "%s" "$STRAVA_VERIFY_TOKEN" | gcloud secrets create STRAVA_VERIFY_TOKEN -
 printf "%s" "$ADMIN_REFRESH_TOKEN" | gcloud secrets create ADMIN_REFRESH_TOKEN --data-file=- --project "$PROJECT_ID"
 ```
 
-If your Strava app provides a webhook signing secret, add it as `STRAVA_SIGNING_SECRET` and include it in the Cloud Run `--set-secrets` list. When configured, `server.js` rejects webhook POSTs whose `X-Strava-Signature` header is missing or invalid.
-
-Deploy to Cloud Run:
+Redeploy with the live refresh settings:
 
 ```bash
 gcloud run deploy "$SERVICE" \
@@ -103,6 +119,8 @@ gcloud run deploy "$SERVICE" \
   --set-env-vars "START_DATE=2026-01-01,GCS_BUCKET=$GCS_BUCKET" \
   --set-secrets "STRAVA_CLIENT_ID=STRAVA_CLIENT_ID:latest,STRAVA_CLIENT_SECRET=STRAVA_CLIENT_SECRET:latest,STRAVA_REFRESH_TOKEN=STRAVA_REFRESH_TOKEN:latest,STRAVA_VERIFY_TOKEN=STRAVA_VERIFY_TOKEN:latest,ADMIN_REFRESH_TOKEN=ADMIN_REFRESH_TOKEN:latest"
 ```
+
+If your Strava app provides a webhook signing secret, add it as `STRAVA_SIGNING_SECRET` and include it in the Cloud Run `--set-secrets` list. When configured, `server.js` rejects webhook POSTs whose `X-Strava-Signature` header is missing or invalid.
 
 Seed the first data file:
 
@@ -125,26 +143,11 @@ Create the Strava webhook subscription:
 
 In the Strava app settings, set the Authorization Callback Domain to the Cloud Run domain without the protocol, for example `le-jog-tracker-abc123-ew.a.run.app`.
 
-## GitHub Deploys to Cloud Run
+## GCP Linked Repo Deploys
 
-The repository includes `.github/workflows/deploy-cloud-run.yml`. It deploys Cloud Run from `main` using Google Workload Identity Federation.
+If you linked this GitHub repository directly in Google Cloud, GCP handles deploys when you push to the configured branch. In that setup, you do not need a GitHub Actions deploy workflow or GitHub Actions GCP auth secrets.
 
-Add these GitHub secrets:
-
-- `GCP_PROJECT_ID`
-- `GCP_WORKLOAD_IDENTITY_PROVIDER`
-- `GCP_SERVICE_ACCOUNT`
-- `GCS_BUCKET`
-
-The workflow expects these GCP Secret Manager secrets to already exist:
-
-- `STRAVA_CLIENT_ID`
-- `STRAVA_CLIENT_SECRET`
-- `STRAVA_REFRESH_TOKEN`
-- `STRAVA_VERIFY_TOKEN`
-- `ADMIN_REFRESH_TOKEN`
-
-You can also add `STRAVA_SIGNING_SECRET` to the Cloud Run deploy command if your Strava app has webhook signing enabled.
+The default deploy can use the checked-in data file only. Add the optional Cloud Storage and Secret Manager settings above when you want live Strava refreshes from Cloud Run.
 
 ## Local Development
 
@@ -190,7 +193,6 @@ curl "http://localhost:8080/strava/webhook?hub.mode=subscribe&hub.challenge=test
 - `server.js` - Static server, JSON endpoint, Strava webhook, admin refresh
 - `Dockerfile` - Container definition
 - `.gcloudignore` - Source deploy ignore list
-- `.github/workflows/deploy-cloud-run.yml` - GitHub-to-Cloud Run deployment
 
 ### Scripts
 
@@ -203,9 +205,10 @@ curl "http://localhost:8080/strava/webhook?hub.mode=subscribe&hub.challenge=test
 
 **No activities showing on the site**
 
-- Run the admin refresh endpoint and check Cloud Run logs.
-- Check that `GCS_BUCKET` is set on the Cloud Run service.
-- Check that the Cloud Run runtime service account can read and write the bucket.
+- For the minimal deploy, check `data/strava-activities.json`.
+- For live refresh, run the admin refresh endpoint and check Cloud Run logs.
+- For live refresh, check that `GCS_BUCKET` is set on the Cloud Run service.
+- For live refresh, check that the Cloud Run runtime service account can read and write the bucket.
 - Verify you have Walk or Hike activities after January 1, 2026.
 
 **Webhook subscription fails**
