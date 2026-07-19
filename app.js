@@ -4,6 +4,7 @@ class LEJOGTracker {
     constructor() {
         this.activities = [];
         this.totalDistance = 0;
+        this.lastUpdated = null;
 
         // SVG coordinates for the LEJOG route waypoints (following the land through Britain)
         this.routeWaypoints = [
@@ -128,6 +129,7 @@ class LEJOGTracker {
 
             // Use the pre-filtered activities from the static file
             this.activities = data.activities;
+            this.lastUpdated = data.lastUpdated;
 
             // Calculate total distance (distance is in meters)
             this.totalDistance = this.activities.reduce((sum, activity) =>
@@ -219,7 +221,9 @@ class LEJOGTracker {
         document.getElementById('weeksElapsed').textContent = this.stats.weeksElapsed;
 
         // Update last updated time
-        document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        document.getElementById('lastUpdated').textContent = this.lastUpdated
+            ? new Date(this.lastUpdated).toLocaleString()
+            : 'Never';
 
         // Redraw map with updated progress
         this.drawMap();

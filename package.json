@@ -1,0 +1,14 @@
+{
+  "name": "lejog-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "LEJOG tracker with Strava webhook updates",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "fetch:strava": "node scripts/fetch-strava-data.js",
+    "check": "node --check server.js && node --check scripts/strava-data.js && node --check scripts/fetch-strava-data.js"
+  }
+}

@@ -1,34 +1,47 @@
 # Strava Data Scripts
 
-This directory contains scripts for fetching and updating Strava activity data.
+This directory contains helpers for Strava OAuth, data refreshes, and webhook subscription setup.
 
 ## fetch-strava-data.js
 
-Fetches walking and hiking activities from the Strava API and generates a static JSON data file.
+Fetches Walk and Hike activities from Strava and generates `data/strava-activities.json`.
 
-**Features:**
-- Automatically refreshes the Strava access token using the refresh token
-- Filters for Walk and Hike activities only
-- Generates a clean JSON data file for the website
+The Cloud Run server uses the same shared logic in `scripts/strava-data.js`, but this script is still useful for local testing and manual recovery.
 
-### Usage
+Authorize the Strava app with the `read,activity:read` scope before generating a refresh token:
 
-The script is designed to run automatically via GitHub Actions, but you can also run it manually:
+```text
+https://www.strava.com/oauth/authorize?client_id=YOUR_CLIENT_ID&response_type=code&redirect_uri=http://localhost/exchange_token&approval_prompt=force&scope=read,activity:read
+```
 
 ```bash
-# Set environment variables
 export STRAVA_CLIENT_ID="your_client_id"
 export STRAVA_CLIENT_SECRET="your_client_secret"
 export STRAVA_REFRESH_TOKEN="your_refresh_token"
 export START_DATE="2026-01-01"
 
-# Run the script
 node scripts/fetch-strava-data.js
 ```
 
-### Output
+## create-strava-webhook.sh
 
-The script generates `data/strava-activities.json` with the following structure:
+Creates a Strava webhook subscription for the deployed Cloud Run service.
+
+```bash
+./scripts/create-strava-webhook.sh \
+  "$STRAVA_CLIENT_ID" \
+  "$STRAVA_CLIENT_SECRET" \
+  "$SERVICE_URL/strava/webhook" \
+  "$STRAVA_VERIFY_TOKEN"
+```
+
+Strava will validate the callback by sending a GET request with `hub.challenge`; `server.js` echoes that challenge when `hub.verify_token` matches `STRAVA_VERIFY_TOKEN`.
+
+If `STRAVA_SIGNING_SECRET` is configured, `server.js` also verifies the `X-Strava-Signature` header on webhook POSTs before scheduling a refresh.
+
+## Output
+
+The generated data has this shape:
 
 ```json
 {
@@ -46,24 +59,12 @@ The script generates `data/strava-activities.json` with the following structure:
       "total_elevation_gain": 50
     }
   ],
-  "totalDistance": 5.0
+  "totalDistance": 5
 }
 ```
 
-### Troubleshooting
+## Troubleshooting
 
-If the workflow logs show:
+If logs show an inactive application error, open the Strava app settings for `STRAVA_CLIENT_ID`, reactivate or approve the application, then retry.
 
-```text
-Strava API error: 403 - {"message":"Forbidden","errors":[{"resource":"Application","field":"Status","code":"Inactive"}]}
-```
-
-the GitHub secrets are valid enough to refresh an access token, but Strava has marked the API application itself as inactive. Open the Strava app settings for `STRAVA_CLIENT_ID`, reactivate or approve the application, then rerun the workflow.
-
-## GitHub Actions Workflow
-
-The workflow automatically runs:
-- Every Monday at 6 AM UTC
-- Can be manually triggered from the Actions tab in GitHub
-
-The workflow fetches the latest Strava data and commits any updates to the repository.
+If logs show `activity:read_permission` missing, the refresh token was authorized with `read` only. Reauthorize with `scope=read,activity:read`, exchange the new authorization code, and update the `STRAVA_REFRESH_TOKEN` secret.
