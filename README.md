@@ -47,7 +47,7 @@ Set your project and region:
 
 ```bash
 export PROJECT_ID="your-gcp-project"
-export REGION="europe-west2"
+export REGION="your-cloud-run-region"
 export SERVICE="le-jog-tracker"
 ```
 
