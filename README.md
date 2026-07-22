@@ -19,9 +19,9 @@ The app is now designed for Google Cloud Run instead of static GitHub Pages. Clo
 2. `app.js` fetches `/data/strava-activities.json`.
 3. Cloud Run serves that JSON from the checked-in file, or from Cloud Storage when `GCS_BUCKET` is configured.
 4. If live refresh is configured, Strava sends activity events to `/strava/webhook`.
-5. Cloud Run acknowledges the webhook immediately, then refreshes Strava data and overwrites the JSON object in Cloud Storage.
+5. Cloud Run refreshes Strava data during the webhook request and overwrites the JSON object in Cloud Storage.
 
-Strava requires webhook POSTs to receive a `200 OK` quickly, so the service debounces refresh work after acknowledging the event. For live refresh, deploy Cloud Run with `--no-cpu-throttling`, as shown below, so the delayed refresh can keep running after the webhook response is sent.
+By default, webhook refreshes run inline so they keep working on Cloud Run services that only allocate CPU while a request is active. If you want the older debounced background behavior, set `WEBHOOK_REFRESH_MODE=background` and deploy Cloud Run with `--no-cpu-throttling` so the delayed refresh can keep running after the webhook response is sent.
 
 ## Strava Setup
 
@@ -115,7 +115,6 @@ gcloud run deploy "$SERVICE" \
   --project "$PROJECT_ID" \
   --region "$REGION" \
   --allow-unauthenticated \
-  --no-cpu-throttling \
   --set-env-vars "START_DATE=2026-01-01,GCS_BUCKET=$GCS_BUCKET" \
   --set-secrets "STRAVA_CLIENT_ID=STRAVA_CLIENT_ID:latest,STRAVA_CLIENT_SECRET=STRAVA_CLIENT_SECRET:latest,STRAVA_REFRESH_TOKEN=STRAVA_REFRESH_TOKEN:latest,STRAVA_VERIFY_TOKEN=STRAVA_VERIFY_TOKEN:latest,ADMIN_REFRESH_TOKEN=ADMIN_REFRESH_TOKEN:latest"
 ```
@@ -210,6 +209,13 @@ curl "http://localhost:8080/strava/webhook?hub.mode=subscribe&hub.challenge=test
 - For live refresh, check that `GCS_BUCKET` is set on the Cloud Run service.
 - For live refresh, check that the Cloud Run runtime service account can read and write the bucket.
 - Verify you have Walk or Hike activities after January 1, 2026.
+
+**Webhook succeeds but the page stays old**
+
+- Check Cloud Run logs for `Starting Strava data refresh` after the webhook POST.
+- Keep the default `WEBHOOK_REFRESH_MODE=inline` unless you have deployed with always-allocated CPU.
+- If you use `WEBHOOK_REFRESH_MODE=background`, deploy with `--no-cpu-throttling`.
+- If you set `GCS_CACHE_TTL_MS`, wait for that cache window or remove it to read Cloud Storage on every data request.
 
 **Webhook subscription fails**
 

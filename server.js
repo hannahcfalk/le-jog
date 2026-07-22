@@ -10,9 +10,12 @@ const PORT = Number(process.env.PORT || 8080);
 const GCS_BUCKET = process.env.GCS_BUCKET;
 const GCS_OBJECT_NAME = process.env.GCS_OBJECT_NAME || 'data/strava-activities.json';
 const WEBHOOK_REFRESH_DELAY_MS = Number(process.env.WEBHOOK_REFRESH_DELAY_MS || 10000);
+const WEBHOOK_REFRESH_MODE = process.env.WEBHOOK_REFRESH_MODE || 'inline';
+const GCS_CACHE_TTL_MS = Number(process.env.GCS_CACHE_TTL_MS || 0);
 const MAX_BODY_BYTES = 1024 * 1024;
 
 let cachedData = null;
+let cachedDataLoadedAt = 0;
 let refreshTimer = null;
 let refreshInFlight = null;
 
@@ -133,16 +136,21 @@ async function writeDataToGcs(data) {
 }
 
 async function readData() {
-    if (cachedData) {
+    const cacheAgeMs = Date.now() - cachedDataLoadedAt;
+    const canUseCache = cachedData && (!GCS_BUCKET || (GCS_CACHE_TTL_MS > 0 && cacheAgeMs < GCS_CACHE_TTL_MS));
+
+    if (canUseCache) {
         return cachedData;
     }
 
     if (GCS_BUCKET) {
         cachedData = await readDataFromGcs();
+        cachedDataLoadedAt = Date.now();
         return cachedData;
     }
 
     cachedData = JSON.parse(fs.readFileSync(OUTPUT_PATH, 'utf8'));
+    cachedDataLoadedAt = Date.now();
     return cachedData;
 }
 
@@ -154,6 +162,7 @@ async function persistData(data) {
     }
 
     cachedData = data;
+    cachedDataLoadedAt = Date.now();
 }
 
 async function refreshData(reason) {
@@ -187,6 +196,18 @@ function scheduleRefresh(reason) {
             console.error(`Webhook-triggered refresh failed: ${error.stack || error.message}`);
         });
     }, WEBHOOK_REFRESH_DELAY_MS);
+}
+
+async function runWebhookRefresh(reason) {
+    if (WEBHOOK_REFRESH_MODE === 'background') {
+        scheduleRefresh(reason);
+        return { mode: 'background' };
+    }
+
+    return {
+        mode: 'inline',
+        data: await refreshData(reason)
+    };
 }
 
 function readJsonBody(req) {
@@ -299,13 +320,34 @@ async function handleWebhookEvent(req, res) {
         event_time: event.event_time
     }));
 
-    sendText(res, 200, 'OK');
-
     if (event.object_type === 'activity') {
-        scheduleRefresh(`webhook ${event.aspect_type || 'activity'} ${event.object_id || ''}`.trim());
+        const reason = `webhook ${event.aspect_type || 'activity'} ${event.object_id || ''}`.trim();
+
+        try {
+            const result = await runWebhookRefresh(reason);
+            if (result.mode === 'inline') {
+                sendJson(res, 200, {
+                    ok: true,
+                    refreshed: true,
+                    lastUpdated: result.data.lastUpdated,
+                    activities: result.data.activities.length,
+                    totalDistance: result.data.totalDistance
+                });
+                return;
+            }
+
+            sendText(res, 200, 'OK');
+            return;
+        } catch (error) {
+            console.error(`Webhook-triggered refresh failed: ${error.stack || error.message}`);
+            sendJson(res, 500, { ok: false, error: error.message });
+            return;
+        }
     } else if (event.object_type === 'athlete' && event.updates?.authorized === 'false') {
         console.warn('Strava athlete deauthorized the app; refresh token may no longer work.');
     }
+
+    sendText(res, 200, 'OK');
 }
 
 async function handleAdminRefresh(req, res) {
