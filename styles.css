@@ -227,11 +227,13 @@ main {
 .comparison-row {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
 }
 
 .comparison {
     display: flex;
     flex-direction: row;
+    flex-wrap: wrap;
     gap: 8px;
     margin: 6px 0;
     position: relative;
@@ -241,6 +243,10 @@ main {
 .comparison span {
     font-family: 'Segoe UI', Roboto, sans-serif;
     font-size: 1.5em;
+}
+
+.plan-note {
+    margin-top: 4px;
 }
 
 .target {
@@ -362,6 +368,14 @@ footer a:hover {
 
     main {
         padding: 5px;
+    }
+
+    .comparison-row {
+        flex-direction: column;
+    }
+
+    .comparison span {
+        font-size: 1.2em;
     }
 
     .wood-frame {

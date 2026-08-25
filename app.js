@@ -40,6 +40,130 @@ class LEJOGTracker {
         this.updateUI();
     }
 
+    parseDate(dateString) {
+        return new Date(`${dateString}T00:00:00`);
+    }
+
+    addDays(date, days) {
+        const nextDate = new Date(date);
+        nextDate.setDate(nextDate.getDate() + days);
+        return nextDate;
+    }
+
+    getStartOfWeek(date) {
+        const weekStart = new Date(date);
+        const dayOfWeek = weekStart.getDay();
+        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Monday
+        weekStart.setDate(weekStart.getDate() - daysToSubtract);
+        weekStart.setHours(0, 0, 0, 0);
+        return weekStart;
+    }
+
+    getEndOfWeek(date) {
+        return this.addDays(this.getStartOfWeek(date), 6);
+    }
+
+    formatDate(date) {
+        return date.toLocaleDateString('en-GB', {
+            day: 'numeric',
+            month: 'short'
+        });
+    }
+
+    countWeekStarts(startDate, endDate) {
+        let count = 0;
+        let cursor = this.getStartOfWeek(startDate);
+        const finalWeekStart = this.getStartOfWeek(endDate);
+
+        while (cursor <= finalWeekStart) {
+            count += 1;
+            cursor = this.addDays(cursor, 7);
+        }
+
+        return count;
+    }
+
+    getAdjustedPlan() {
+        const plan = CONFIG.TARGET_PLAN;
+
+        if (!plan) {
+            return null;
+        }
+
+        const planStartDate = this.parseDate(plan.START_DATE);
+        const reducedTargetEndDate = this.parseDate(plan.REDUCED_TARGET_END_DATE);
+        const finishDate = this.parseDate(plan.FINISH_DATE);
+        const reducedWeeks = this.countWeekStarts(planStartDate, reducedTargetEndDate);
+        const catchUpStartDate = this.addDays(reducedTargetEndDate, 1);
+        const catchUpWeeks = this.countWeekStarts(catchUpStartDate, finishDate);
+        const planStartDistance = CONFIG.TOTAL_DISTANCE - plan.REMAINING_AT_START;
+        const remainingAfterReducedWeeks = plan.REMAINING_AT_START - (reducedWeeks * plan.REDUCED_WEEKLY_TARGET);
+        const catchUpWeeklyTarget = remainingAfterReducedWeeks / catchUpWeeks;
+
+        return {
+            ...plan,
+            planStartDate,
+            reducedTargetEndDate,
+            finishDate,
+            reducedWeeks,
+            catchUpStartDate,
+            catchUpWeeks,
+            planStartDistance,
+            catchUpWeeklyTarget
+        };
+    }
+
+    getWeeklyTargetForDate(date) {
+        const adjustedPlan = this.getAdjustedPlan();
+
+        if (!adjustedPlan || date < adjustedPlan.planStartDate) {
+            return CONFIG.WEEKLY_TARGET;
+        }
+
+        if (date <= adjustedPlan.reducedTargetEndDate) {
+            return adjustedPlan.REDUCED_WEEKLY_TARGET;
+        }
+
+        return adjustedPlan.catchUpWeeklyTarget;
+    }
+
+    getTargetDistanceForWeekEnd(weekEnd) {
+        const adjustedPlan = this.getAdjustedPlan();
+
+        if (!adjustedPlan || weekEnd < adjustedPlan.planStartDate) {
+            return this.getWeekNumber(weekEnd) * CONFIG.WEEKLY_TARGET;
+        }
+
+        const targetWeekStart = this.getStartOfWeek(weekEnd);
+        const reducedWeekEnd = this.getEndOfWeek(adjustedPlan.reducedTargetEndDate);
+        const reducedWeeksCompleted = Math.min(
+            adjustedPlan.reducedWeeks,
+            this.countWeekStarts(adjustedPlan.planStartDate, Math.min(weekEnd, reducedWeekEnd))
+        );
+        const catchUpWeeksCompleted = weekEnd > reducedWeekEnd
+            ? this.countWeekStarts(adjustedPlan.catchUpStartDate, weekEnd)
+            : 0;
+
+        const targetDistance = adjustedPlan.planStartDistance
+            + (reducedWeeksCompleted * adjustedPlan.REDUCED_WEEKLY_TARGET)
+            + (catchUpWeeksCompleted * adjustedPlan.catchUpWeeklyTarget);
+
+        if (targetWeekStart > this.getStartOfWeek(adjustedPlan.finishDate)) {
+            return CONFIG.TOTAL_DISTANCE;
+        }
+
+        return Math.min(targetDistance, CONFIG.TOTAL_DISTANCE);
+    }
+
+    getWeekNumber(date) {
+        const startDate = this.parseDate(CONFIG.START_DATE);
+        const firstWeekStart = this.getStartOfWeek(startDate);
+        const weekStart = this.getStartOfWeek(date);
+        const msPerWeek = 1000 * 60 * 60 * 24 * 7;
+
+        return Math.floor((weekStart - firstWeekStart) / msPerWeek) + 1;
+    }
+
     // Calculate position along the route path based on distance percentage
     getPositionAlongPath(percent) {
         if (percent <= 0) return this.routeWaypoints[0];
@@ -147,24 +271,22 @@ class LEJOGTracker {
     }
 
     calculateStats() {
-        const startDate = new Date(CONFIG.START_DATE);
+        const startDate = this.parseDate(CONFIG.START_DATE);
         const now = new Date();
 
         // Calculate days and weeks elapsed
         const msPerDay = 1000 * 60 * 60 * 24;
         const daysElapsed = Math.floor((now - startDate) / msPerDay);
         const weeksElapsed = Math.floor(daysElapsed / 7);
-        const currentWeek = weeksElapsed + 1; // Week 1, 2, 3, etc.
-
-        // Calculate target distance by end of current week
-        const targetDistance = currentWeek * CONFIG.WEEKLY_TARGET;
+        const currentWeek = this.getWeekNumber(now);
 
         // Calculate this week's distance
-        const weekStart = new Date(now);
-        const dayOfWeek = now.getDay();
-        const daysToSubtract = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Start of current week (Monday)
-        weekStart.setDate(now.getDate() - daysToSubtract);
-        weekStart.setHours(0, 0, 0, 0);
+        const weekStart = this.getStartOfWeek(now);
+        const weekEnd = this.getEndOfWeek(now);
+        const thisWeekTarget = this.getWeeklyTargetForDate(weekEnd);
+
+        // Calculate target distance by end of current week
+        const targetDistance = this.getTargetDistanceForWeekEnd(weekEnd);
 
         const thisWeekActivities = this.activities.filter(activity => {
             const activityDate = new Date(activity.start_date);
@@ -183,6 +305,9 @@ class LEJOGTracker {
             actualDistance: this.totalDistance,
             difference: this.totalDistance - targetDistance,
             thisWeekDistance,
+            thisWeekTarget,
+            weekEnd,
+            adjustedPlan: this.getAdjustedPlan(),
             progressPercent: (this.totalDistance / CONFIG.TOTAL_DISTANCE) * 100
         };
     }
@@ -199,11 +324,19 @@ class LEJOGTracker {
 
         // Update this week
         document.getElementById('thisWeekDistance').textContent = `${this.stats.thisWeekDistance.toFixed(2)} km`;
+        document.getElementById('thisWeekTarget').textContent = `Target: ${this.stats.thisWeekTarget.toFixed(2)} km/week`;
 
         // Update target vs actual
-        document.getElementById('currentWeek').textContent = this.stats.currentWeek;
-        document.getElementById('targetKm').textContent = this.stats.targetDistance.toFixed(0);
+        document.getElementById('targetWeekLabel').textContent = `week ending ${this.formatDate(this.stats.weekEnd)}`;
+        document.getElementById('targetKm').textContent = this.stats.targetDistance.toFixed(2);
         document.getElementById('actualKm').textContent = this.stats.actualDistance.toFixed(2);
+
+        const targetPlanNote = document.getElementById('targetPlanNote');
+        if (this.stats.adjustedPlan) {
+            targetPlanNote.textContent = `15 km/week until ${this.formatDate(this.stats.adjustedPlan.reducedTargetEndDate)}, then ${this.stats.adjustedPlan.catchUpWeeklyTarget.toFixed(2)} km/week to finish by ${this.formatDate(this.stats.adjustedPlan.finishDate)} ${this.stats.adjustedPlan.finishDate.getFullYear()}.`;
+        } else {
+            targetPlanNote.textContent = `${CONFIG.WEEKLY_TARGET} km/week target.`;
+        }
 
         // Update difference
         const differenceEl = document.getElementById('difference');

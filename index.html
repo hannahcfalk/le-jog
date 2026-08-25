@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&family=Permanent+Marker&family=Indie+Flower&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="styles.css?v=target-plan-2026-08-25-2">
 </head>
 <body>
     <div class="cork-board">
@@ -67,18 +67,19 @@
                 <div class="stat-card">
                     <h3>This Week</h3>
                     <p id="thisWeekDistance" class="stat-value">0 km</p>
-                    <p class="stat-label">Target: 27 km/week</p>
+                    <p id="thisWeekTarget" class="stat-label">Target: 0 km/week</p>
                 </div>
 
                 <div class="stat-card">
                     <h3>Target vs Actual</h3>
                     <div class="comparison-row">
-                    <p id="targetDistance" class="stat-label">By end of week <span id="currentWeek">0</span>:</p>
-                    <p class="comparison">
-                        <span class="target">Target: <span id="targetKm">0</span> km</span>
-                        <span class="actual">Actual: <span id="actualKm">0</span> km</span>
-                    </p>
+                        <p id="targetDistance" class="stat-label">By end of <span id="targetWeekLabel">this week</span>:</p>
+                        <p class="comparison">
+                            <span class="target">Target: <span id="targetKm">0</span> km</span>
+                            <span class="actual">Actual: <span id="actualKm">0</span> km</span>
+                        </p>
                     </div>
+                    <p id="targetPlanNote" class="stat-label plan-note"></p>
                     <p id="difference" class="difference"></p>
                 </div>
 
@@ -101,7 +102,7 @@
         </div>
     </div>
 
-    <script src="config.js"></script>
-    <script src="app.js"></script>
+    <script src="config.js?v=target-plan-2026-08-25-2"></script>
+    <script src="app.js?v=target-plan-2026-08-25-2"></script>
 </body>
 </html>

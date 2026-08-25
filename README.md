@@ -8,7 +8,7 @@ The app is now designed for Google Cloud Run instead of static GitHub Pages. Clo
 
 - Visual UK map showing the LEJOG route
 - Progress tracking from Strava Walk and Hike activities
-- Weekly target comparison (27 km/week)
+- Weekly target comparison with the adjusted 2026 plan: 15 km/week through the week ending October 11, then the recalculated finish target
 - Optional Strava webhook endpoint for create/update/delete activity events
 - Optional Cloud Storage-backed `data/strava-activities.json`
 - Optional manual admin refresh endpoint for bootstrapping and recovery
