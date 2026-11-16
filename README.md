@@ -8,7 +8,7 @@ The app is now designed for Google Cloud Run instead of static GitHub Pages. Clo
 
 - Visual UK map showing the LEJOG route
 - Progress tracking from Strava Walk, Hike, and Run activities. Runs from July 11 through October 11, 2026 (inclusive, by activity local date), are excluded as half-marathon training; walks and hikes still count.
-- Weekly target comparison with the adjusted 2026 plan: 15 km/week through the week ending October 11, then the recalculated finish target
+- Weekly target comparison with five equal weekly targets from November 16 through Sunday December 20, 2026, based on the distance remaining before November 16. Walks, hikes, and eligible runs count towards the target.
 - Optional Strava webhook endpoint for create/update/delete activity events
 - Optional Cloud Storage-backed `data/strava-activities.json`
 - Optional manual admin refresh endpoint for bootstrapping and recovery

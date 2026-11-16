@@ -8,12 +8,9 @@ const CONFIG = {
     TOTAL_DISTANCE: 1407, // km from Land's End to John o' Groats
     WEEKLY_TARGET: 27, // km per week before the adjusted plan starts
 
-    // Optional adjusted target plan.
+    // Spread the distance remaining at the start of this week over five equal weeks.
     TARGET_PLAN: {
-        START_DATE: '2026-08-24',
-        REMAINING_AT_START: 669.51,
-        REDUCED_TARGET_END_DATE: '2026-10-11',
-        REDUCED_WEEKLY_TARGET: 15,
-        FINISH_DATE: '2026-12-31'
+        START_DATE: '2026-11-16',
+        FINISH_DATE: '2026-12-20'
     }
 };

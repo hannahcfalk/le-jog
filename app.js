@@ -91,68 +91,36 @@ class LEJOGTracker {
         }
 
         const planStartDate = this.parseDate(plan.START_DATE);
-        const reducedTargetEndDate = this.parseDate(plan.REDUCED_TARGET_END_DATE);
         const finishDate = this.parseDate(plan.FINISH_DATE);
-        const reducedWeeks = this.countWeekStarts(planStartDate, reducedTargetEndDate);
-        const catchUpStartDate = this.addDays(reducedTargetEndDate, 1);
-        const catchUpWeeks = this.countWeekStarts(catchUpStartDate, finishDate);
-        const planStartDistance = CONFIG.TOTAL_DISTANCE - plan.REMAINING_AT_START;
-        const remainingAfterReducedWeeks = plan.REMAINING_AT_START - (reducedWeeks * plan.REDUCED_WEEKLY_TARGET);
-        const catchUpWeeklyTarget = remainingAfterReducedWeeks / catchUpWeeks;
+        const weeks = this.countWeekStarts(planStartDate, finishDate);
+        // Anchor the plan to completed activities before its start, so new
+        // walks and runs do not keep changing the weekly target.
+        const planStartDistance = this.activities
+            .filter(activity => (activity.start_date_local || activity.start_date).slice(0, 10) < plan.START_DATE)
+            .reduce((sum, activity) => sum + activity.distance / 1000, 0);
+        const weeklyTarget = Math.max(0, CONFIG.TOTAL_DISTANCE - planStartDistance) / weeks;
 
-        return {
-            ...plan,
-            planStartDate,
-            reducedTargetEndDate,
-            finishDate,
-            reducedWeeks,
-            catchUpStartDate,
-            catchUpWeeks,
-            planStartDistance,
-            catchUpWeeklyTarget
-        };
+        return { planStartDate, finishDate, weeks, planStartDistance, weeklyTarget };
     }
 
     getWeeklyTargetForDate(date) {
-        const adjustedPlan = this.getAdjustedPlan();
-
-        if (!adjustedPlan || date < adjustedPlan.planStartDate) {
+        const plan = this.getAdjustedPlan();
+        if (!plan || date < plan.planStartDate) {
             return CONFIG.WEEKLY_TARGET;
         }
-
-        if (date <= adjustedPlan.reducedTargetEndDate) {
-            return adjustedPlan.REDUCED_WEEKLY_TARGET;
+        if (this.getStartOfWeek(date) > this.getStartOfWeek(plan.finishDate)) {
+            return 0;
         }
-
-        return adjustedPlan.catchUpWeeklyTarget;
+        return plan.weeklyTarget;
     }
 
     getTargetDistanceForWeekEnd(weekEnd) {
-        const adjustedPlan = this.getAdjustedPlan();
-
-        if (!adjustedPlan || weekEnd < adjustedPlan.planStartDate) {
+        const plan = this.getAdjustedPlan();
+        if (!plan || weekEnd < plan.planStartDate) {
             return this.getWeekNumber(weekEnd) * CONFIG.WEEKLY_TARGET;
         }
-
-        const targetWeekStart = this.getStartOfWeek(weekEnd);
-        const reducedWeekEnd = this.getEndOfWeek(adjustedPlan.reducedTargetEndDate);
-        const reducedWeeksCompleted = Math.min(
-            adjustedPlan.reducedWeeks,
-            this.countWeekStarts(adjustedPlan.planStartDate, Math.min(weekEnd, reducedWeekEnd))
-        );
-        const catchUpWeeksCompleted = weekEnd > reducedWeekEnd
-            ? this.countWeekStarts(adjustedPlan.catchUpStartDate, weekEnd)
-            : 0;
-
-        const targetDistance = adjustedPlan.planStartDistance
-            + (reducedWeeksCompleted * adjustedPlan.REDUCED_WEEKLY_TARGET)
-            + (catchUpWeeksCompleted * adjustedPlan.catchUpWeeklyTarget);
-
-        if (targetWeekStart > this.getStartOfWeek(adjustedPlan.finishDate)) {
-            return CONFIG.TOTAL_DISTANCE;
-        }
-
-        return Math.min(targetDistance, CONFIG.TOTAL_DISTANCE);
+        const weeksCompleted = Math.min(plan.weeks, this.countWeekStarts(plan.planStartDate, weekEnd));
+        return Math.min(CONFIG.TOTAL_DISTANCE, plan.planStartDistance + weeksCompleted * plan.weeklyTarget);
     }
 
     getWeekNumber(date) {
@@ -333,7 +301,7 @@ class LEJOGTracker {
 
         const targetPlanNote = document.getElementById('targetPlanNote');
         if (this.stats.adjustedPlan) {
-            targetPlanNote.textContent = `15 km/week until ${this.formatDate(this.stats.adjustedPlan.reducedTargetEndDate)}, then ${this.stats.adjustedPlan.catchUpWeeklyTarget.toFixed(2)} km/week to finish by ${this.formatDate(this.stats.adjustedPlan.finishDate)} ${this.stats.adjustedPlan.finishDate.getFullYear()}.`;
+            targetPlanNote.textContent = `${this.stats.adjustedPlan.weeklyTarget.toFixed(2)} km/week from ${this.formatDate(this.stats.adjustedPlan.planStartDate)} to finish by Sunday ${this.formatDate(this.stats.adjustedPlan.finishDate)} ${this.stats.adjustedPlan.finishDate.getFullYear()}. Walks and runs count towards the target.`;
         } else {
             targetPlanNote.textContent = `${CONFIG.WEEKLY_TARGET} km/week target.`;
         }
