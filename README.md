@@ -1,13 +1,13 @@
 # LEJOG 2026 Tracker
 
-A website to track my journey walking 1,407 km from Land's End to John o' Groats, starting January 1, 2026.
+A website to track my journey covering 1,407 km from Land's End to John o' Groats, starting January 1, 2026.
 
 The app is now designed for Google Cloud Run instead of static GitHub Pages. Cloud Run serves the website from the checked-in data file by default, with optional Strava webhook refreshes backed by Cloud Storage.
 
 ## Features
 
 - Visual UK map showing the LEJOG route
-- Progress tracking from Strava Walk and Hike activities
+- Progress tracking from Strava Walk, Hike, and Run activities. Runs from July 11 through October 11, 2026 (inclusive, by activity local date), are excluded as half-marathon training; walks and hikes still count.
 - Weekly target comparison with the adjusted 2026 plan: 15 km/week through the week ending October 11, then the recalculated finish target
 - Optional Strava webhook endpoint for create/update/delete activity events
 - Optional Cloud Storage-backed `data/strava-activities.json`
@@ -208,7 +208,7 @@ curl "http://localhost:8080/strava/webhook?hub.mode=subscribe&hub.challenge=test
 - For live refresh, run the admin refresh endpoint and check Cloud Run logs.
 - For live refresh, check that `GCS_BUCKET` is set on the Cloud Run service.
 - For live refresh, check that the Cloud Run runtime service account can read and write the bucket.
-- Verify you have Walk or Hike activities after January 1, 2026.
+- Verify you have Walk, Hike, or eligible Run activities after January 1, 2026.
 
 **Webhook succeeds but the page stays old**
 

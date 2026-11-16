@@ -3,7 +3,9 @@ const path = require('path');
 
 const DEFAULT_START_DATE = '2026-01-01';
 const OUTPUT_PATH = path.join(__dirname, '..', 'data', 'strava-activities.json');
-const ACTIVITY_TYPES = new Set(['Walk', 'Hike']);
+const ACTIVITY_TYPES = new Set(['Walk', 'Hike', 'Run']);
+const HALF_MARATHON_TRAINING_START = '2026-07-11';
+const HALF_MARATHON_TRAINING_END = '2026-10-11';
 
 function buildStravaApiError(action, statusCode, data) {
     let parsedError;
@@ -139,7 +141,14 @@ async function fetchActivities(accessToken, startDate, logger = console) {
 }
 
 function shapeActivities(activities, startDate) {
-    const filteredActivities = activities.filter(activity => ACTIVITY_TYPES.has(activity.type));
+    const filteredActivities = activities.filter(activity => {
+        if (!ACTIVITY_TYPES.has(activity.type)) return false;
+        if (activity.type !== 'Run') return true;
+
+        // Strava's local date keeps runs near midnight on the correct day.
+        const date = (activity.start_date_local || activity.start_date).slice(0, 10);
+        return date < HALF_MARATHON_TRAINING_START || date > HALF_MARATHON_TRAINING_END;
+    });
     const totalDistance = filteredActivities.reduce((sum, activity) =>
         sum + (activity.distance / 1000), 0
     );
@@ -170,7 +179,7 @@ async function fetchStravaData(env = process.env, logger = console) {
     const activities = await fetchActivities(accessToken, config.startDate, logger);
     const outputData = shapeActivities(activities, config.startDate);
 
-    logger.log(`Found ${outputData.activities.length} walking/hiking activities`);
+    logger.log(`Found ${outputData.activities.length} eligible walking/hiking/running activities`);
     logger.log(`Total distance: ${outputData.totalDistance.toFixed(2)} km`);
 
     return outputData;
@@ -187,5 +196,6 @@ module.exports = {
     OUTPUT_PATH,
     buildStravaApiError,
     fetchStravaData,
+    shapeActivities,
     writeDataFile
 };

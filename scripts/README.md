@@ -4,7 +4,7 @@ This directory contains helpers for Strava OAuth, data refreshes, and webhook su
 
 ## fetch-strava-data.js
 
-Fetches Walk and Hike activities from Strava and generates `data/strava-activities.json`.
+Fetches Walk, Hike, and Run activities from Strava, excluding runs from July 11 through October 11, 2026 (inclusive, by activity local date), and generates `data/strava-activities.json`.
 
 The Cloud Run server uses the same shared logic in `scripts/strava-data.js`, but this script is still useful for local testing and manual recovery.
 
